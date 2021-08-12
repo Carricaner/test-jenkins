@@ -1,17 +1,20 @@
-pipeline {
+pipeline{
     agent any
     stages {
-        stage('Example'){
+        stage('Build') {
             steps{
-                echo 'Hello world!'
-                script {
-                    def browsers = ['chrome','firefox']
-                    for (int i = 0;i < browers.size();++i){
-                        echo "Testing the ${browsers[i]} browser"
-                    }
-                }
+                echo 'This is a build step' 
+            }
+        }
+        stage('Test') {
+            steps{
+                echo 'This is a test step'  
+            }
+        }
+        stage('Deploy') {
+            steps{
+                echo 'This is a deploy step'    
             }
         }
     }
 }
-
