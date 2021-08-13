@@ -24,9 +24,8 @@ pipeline{
             environment{
                 DEBUG_FLAGS = "-g"
                 GREETING = "Greeting"
-                // These credentials would have been configured in Jenkins with their respective credential IDs.
-                // AWS_ACCESS_KEY_ID     = credentials('jenkins-aws-secret-key-id')
-                // AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')
+                // The credential would have been configured in Jenkins with their respective credential IDs.
+                JENKINS_TEST_SECRET_TEXT = credentials('jenkinsfile-test-secret-text')
             }
             steps{
                 // Remember to use double quotes
@@ -40,8 +39,7 @@ pipeline{
                 echo "GREETING: ${GREETING}"
                 echo "EXIT_STATUS: ${EXIT_STATUS}"
                 sh 'printenv'
-                // echo "AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}"
-                // echo "AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}"
+                echo "Test echo credential JENKINS_TEST_SECRET_TEXT: ${JENKINS_TEST_SECRET_TEXT}"
             }
         }
     }
