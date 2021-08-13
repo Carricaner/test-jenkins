@@ -3,7 +3,20 @@ pipeline{
     // place only below agent can make env params avaliable in the entire jenkins file.
     // BTW, Better using all-capitalized letters in keys
     environment { 
-        CC = 'clang'
+        // Using returnStdout
+        // Usually use trim() to strip off a trailing whitespace.
+        CC = """${sh(
+                returnStdout: true,
+                script: 'echo "Darren-Li"'
+            )}""".trim()
+        // Using returnStatus
+        // Normally, a nonzero status code will cause the step to fail with an exception.
+        // If returnStatus is checked, the value will instead be status code.
+        // You may compare it to zero, for example.
+        EXIT_STATUS = """${sh(
+                returnStatus: true,
+                script: 'exit 1'
+            )}"""
     }
     stages {
         stage('env') {
@@ -22,6 +35,7 @@ pipeline{
                 echo "CC: ${CC}"
                 echo "DEBUG_FLAGS: ${DEBUG_FLAGS}"
                 echo "GREETING: ${GREETING}"
+                echo "EXIT_STATUS: ${EXIT_STATUS}"
             }
         }
     }
