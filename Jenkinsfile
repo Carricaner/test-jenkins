@@ -36,6 +36,7 @@ pipeline{
                 echo "DEBUG_FLAGS: ${DEBUG_FLAGS}"
                 echo "GREETING: ${GREETING}"
                 echo "EXIT_STATUS: ${EXIT_STATUS}"
+                sh 'printenv'
             }
         }
     }
