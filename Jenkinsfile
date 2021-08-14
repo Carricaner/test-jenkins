@@ -24,9 +24,6 @@ pipeline{
             environment{
                 DEBUG_FLAGS = "-g"
                 GREETING = "Greeting"
-                // The credential would have been configured in Jenkins with their respective credential IDs.
-                JENKINS_TEST_SECRET_TEXT = credentials("jenkinsfile-test-secret-text")
-                JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD = credentials("jenkinsfile-test-secret-username-and-password")
             }
             steps{
                 // Remember to use double quotes
@@ -43,6 +40,11 @@ pipeline{
             }
         }
         stage('credential') {
+            environment{
+                // The credential would have been configured in Jenkins with their respective credential IDs.
+                JENKINS_TEST_SECRET_TEXT = credentials("jenkinsfile-test-secret-text")
+                JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD = credentials("jenkinsfile-test-secret-username-and-password")
+            }
             steps{
                 echo "Test echo credential JENKINS_TEST_SECRET_TEXT: ${JENKINS_TEST_SECRET_TEXT}"
                 echo "Test echo credential JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD: ${JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD}"
