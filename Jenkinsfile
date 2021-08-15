@@ -42,7 +42,9 @@ pipeline{
         stage('credential') {
             environment{
                 // The credential would have been configured in Jenkins with their respective credential IDs.
+                // secret text credential
                 JENKINS_TEST_SECRET_TEXT = credentials("jenkinsfile-test-secret-text")
+                // secret username & password credential
                 JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD = credentials("jenkinsfile-test-secret-username-and-password")
             }
             steps{
@@ -50,6 +52,15 @@ pipeline{
                 echo "Test echo credential JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD: ${JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD}"
                 echo "Test echo credential JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD username: ${JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD_USR}"
                 echo "Test echo credential JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD password: ${JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD_PSW}"
+                // secret private SSH key credential
+                withCredentials(
+                    [sshUserPrivateKey(
+                        credentialsId: 'macOS-private-key', 
+                        keyFileVariable: 'SSH_KEY_FOR_MAC'
+                    )]
+                ) {
+                    echo "SSH key for macOS host: ${SSH_KEY_FOR_MAC}"
+                }
             }
         }
     }
