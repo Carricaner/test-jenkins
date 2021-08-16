@@ -1,7 +1,7 @@
 pipeline{
     agent any
     // place only below agent can make env params avaliable in the entire jenkins file.
-    // BTW, Better using all-capitalized letters in keys
+    // BTW, Better using all-capitalized letters in keys.
     environment { 
         // Using returnStdout
         // Usually use trim() to strip off a trailing whitespace.
@@ -17,6 +17,9 @@ pipeline{
                 returnStatus: true,
                 script: 'exit 1'
             )}"""
+    }
+    parameters {
+        string(name: 'STATEMENT', defaultValue: 'hello; ls /', description: 'What should I say?')
     }
     stages {
         stage('env') {
@@ -48,10 +51,18 @@ pipeline{
                 JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD = credentials("jenkinsfile-test-secret-username-and-password")
             }
             steps{
+                // It will detect whether the command is revealing the sensitive info and use asterisks to cover them.
                 echo "Test echo credential JENKINS_TEST_SECRET_TEXT: ${JENKINS_TEST_SECRET_TEXT}"
                 echo "Test echo credential JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD: ${JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD}"
                 echo "Test echo credential JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD username: ${JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD_USR}"
                 echo "Test echo credential JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD password: ${JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD_PSW}"
+                
+                // When using command like sh, bat or powershell, we shall use single quotes instead of double quotes.
+                sh('echo ${JENKINS_TEST_SECRET_TEXT}')
+                sh('echo ${JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD}')
+                sh('echo ${JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD_USR}')
+                sh('echo ${JENKINS_TEST_SECRET_USERNAME_AND_PASSWORD_PSW}')
+                
                 // secret private SSH key credential
                 withCredentials(
                     [sshUserPrivateKey(
@@ -73,12 +84,15 @@ pipeline{
                 // Only double-quotes can support the dollar-sign ($) based string interpolation.
                 echo 'Hello, ${HOST}'
                 echo "Hello, ${HOST}"
-                // Avoid using double-quotes on sensitive info. 
-                // Instead, use single-quotes.
-                /* WRONG */
-                sh("curl --X ${HTTP_METHOD} ${TARGET_URL}")
-                /* CORRECT */
-                sh('curl --X ${HTTP_METHOD} ${TARGET_URL}')
+                
+                // Avoid using double-quotes which can reveal sensitive info, instead, use single-quotes.
+                sh("curl -X ${HTTP_METHOD} ${TARGET_URL}") /* WRONG */
+                sh('curl -X ${HTTP_METHOD} ${TARGET_URL}') /* CORRECT */
+                
+                // Injection via interpolation
+                sh("echo ${params.STATEMENT}") /* WRONG */
+                sh('echo ${STATEMENT}') /* CORRECT */
+
             }
         }
     }
