@@ -19,7 +19,27 @@ pipeline{
             )}"""
     }
     parameters {
-        string(name: 'STATEMENT', defaultValue: 'hello; ls /', description: 'What should I say?')
+        string(
+            name: 'STATEMENT', 
+            defaultValue: 'hello; ls /', 
+            description: 'What should I say?'
+        )
+        choice(
+            name: 'PARAMETER_01',
+            choices: ['ONE', 'TWO']
+        )
+        booleanParam(
+            name: 'BOOLEAN',
+            defaultValue: true, 
+            description: '' 
+        )
+        text(
+            name: 'MULTI-LINE-STRING',
+            defaultValue: '''
+            this is a multi-line 
+            string parameter example
+            '''
+        )
     }
     stages {
         stage('env') {
@@ -86,12 +106,17 @@ pipeline{
                 echo "Hello, ${HOST}"
                 
                 // Avoid using double-quotes which can reveal sensitive info, instead, use single-quotes.
-                sh("curl -X ${HTTP_METHOD} ${TARGET_URL}") /* WRONG */
-                sh('curl -X ${HTTP_METHOD} ${TARGET_URL}') /* CORRECT */
+                sh("curl -X ${HTTP_METHOD} ${TARGET_URL}") /*** WRONG ***/
+                sh('curl -X ${HTTP_METHOD} ${TARGET_URL}') /*** CORRECT ***/
                 
                 // Injection via interpolation
-                sh("echo ${params.STATEMENT}") /* WRONG */
-                sh('echo ${STATEMENT}') /* CORRECT */
+                // The firdt one will echo 'hello' then execute 'ls' as well as deisplaying the content.
+                sh("echo ${params.STATEMENT}") /*** WRONG ***/
+                // Using single-quote means a standard java String.
+                // If we want to use single-quotes, we can use params w/o prefix params.
+                // Related stackoverflow:
+                // https://stackoverflow.com/questions/45836682/using-parameters-within-a-shell-command-in-jenkinsfile-for-jenkins-pipeline
+                sh('echo ${STATEMENT}') /*** CORRECT ***/
 
             }
         }
