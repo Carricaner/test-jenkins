@@ -29,7 +29,7 @@ pipeline{
                 // Remember to use double quotes
                 echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
                 echo "JAVA_HOME: ${env.JAVA_HOME}"
-                echo "Jenkins URL: ${JENKINS_URL}"
+                echo "Jenkins TARGET_URL: ${JENKINS_URL}"
                 echo "Jenkins Node Name: ${NODE_NAME}"
                 echo "Jenkins Workspace: ${WORKSPACE}"
                 echo "CC: ${CC}"
@@ -61,6 +61,24 @@ pipeline{
                 ) {
                     echo "SSH key for macOS host: ${SSH_KEY_FOR_MAC}"
                 }
+            }
+        }
+        stage('string-interpolation') {
+            environment {
+                HOST = 'JENKINS'
+                HTTP_METHOD = 'GET'
+                TARGET_URL = 'https://google.com'
+            }
+            steps {
+                // Only double-quotes can support the dollar-sign ($) based string interpolation.
+                echo 'Hello, ${HOST}'
+                echo "Hello, ${HOST}"
+                // Avoid using double-quotes on sensitive info. 
+                // Instead, use single-quotes.
+                /* WRONG */
+                sh("curl --X ${HTTP_METHOD} ${TARGET_URL}")
+                /* CORRECT */
+                sh('curl --X ${HTTP_METHOD} ${TARGET_URL}')
             }
         }
     }
