@@ -25,7 +25,7 @@ pipeline{
             description: 'What should I say?'
         )
         choice(
-            name: 'PARAMETER_01',
+            name: 'CHOICE',
             choices: ['ONE', 'TWO']
         )
         booleanParam(
@@ -44,6 +44,7 @@ pipeline{
     }
     stages {
         stage('env') {
+            agent any
             // Env params within stage directive can only be used in the steps within the stage.
             environment{
                 DEBUG_FLAGS = "-g"
@@ -51,11 +52,14 @@ pipeline{
             }
             steps{
                 // Remember to use double quotes
+                // Default params in Jenkins
                 echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
                 echo "JAVA_HOME: ${env.JAVA_HOME}"
                 echo "Jenkins TARGET_URL: ${JENKINS_URL}"
                 echo "Jenkins Node Name: ${NODE_NAME}"
                 echo "Jenkins Workspace: ${WORKSPACE}"
+
+                // Customized params in Jenkinsfile
                 echo "CC: ${CC}"
                 echo "DEBUG_FLAGS: ${DEBUG_FLAGS}"
                 echo "GREETING: ${GREETING}"
@@ -69,6 +73,9 @@ pipeline{
             }
         }
         stage('credential') {
+            agent {
+                label "mac"
+            }
             environment{
                 // The credential would have been configured in Jenkins with their respective credential IDs.
                 // secret text credential
@@ -106,6 +113,9 @@ pipeline{
             }
         }
         stage('string-interpolation') {
+            agent {
+                label "mac"
+            }
             environment {
                 HOST = 'JENKINS'
                 HTTP_METHOD = 'GET'
