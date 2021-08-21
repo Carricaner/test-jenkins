@@ -33,6 +33,7 @@ pipeline{
             defaultValue: true, 
             description: '' 
         )
+        // Text param allows multiple lines.
         text(
             name: 'MULTI-LINE-STRING',
             defaultValue: '''
@@ -60,6 +61,11 @@ pipeline{
                 echo "GREETING: ${GREETING}"
                 echo "EXIT_STATUS: ${EXIT_STATUS}"
                 sh 'printenv'
+            }
+            post {
+                always {
+                    echo "Testing post after stage env ..."
+                }
             }
         }
         stage('credential') {
@@ -93,6 +99,11 @@ pipeline{
                     echo "SSH key for macOS host: ${SSH_KEY_FOR_MAC}"
                 }
             }
+            post {
+                always {
+                    echo "Testing post after stage credential ..."
+                }
+            }
         }
         stage('string-interpolation') {
             environment {
@@ -114,11 +125,38 @@ pipeline{
                 sh("echo ${params.STATEMENT}") /*** WRONG ***/
                 // Using single-quote means a standard java String.
                 // If we want to use single-quotes, we can use params w/o prefix params.
-                // Related stackoverflow:
-                // https://stackoverflow.com/questions/45836682/using-parameters-within-a-shell-command-in-jenkinsfile-for-jenkins-pipeline
+                // Related stackoverflow: https://stackoverflow.com/questions/45836682/using-parameters-within-a-shell-command-in-jenkinsfile-for-jenkins-pipeline
                 sh('echo ${STATEMENT}') /*** CORRECT ***/
 
             }
         }
+    }
+    // The post section defines one or more additional steps that are run upon the completion of a Pipeline’s or stage’s run. (depending on the location of the post section within the Pipeline)
+    // For all supported condition blocks, see: https://www.jenkins.io/doc/book/pipeline/syntax/#post
+    post {
+        // Execute the commands in always block regardless the state of pipeline
+        always {
+            echo "Always running this command ..."
+        }
+        // Execute the commands in success block if the state is "success."
+        // Web UI --> green or blue
+        success {
+            echo "Success !"
+        }
+        // Execute the commands in unstable block if the state is "unstable" like test failures, code violation, etc.
+        // Web UI --> yellow
+        unstable {
+            echo "Unstable ..."
+        }
+        // Execute the commands in failure block if the state is "failed."
+        // Web UI --> red
+        failure {
+            echo "Failure ..."
+        }
+        // Run the steps in cleanup block after every other post condition has been evaluated, regardless of the Pipeline or stage’s status.
+        cleanup {
+            echo "Cleanup executed after all post commands ..."
+        }
+
     }
 }
