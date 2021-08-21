@@ -43,41 +43,39 @@ pipeline{
         )
     }
     stages {
-        stage('initial') {
-            stage('env') {
-                agent {
-                    label "mac"
-                }
-                // Env params within stage directive can only be used in the steps within the stage.
-                environment{
-                    DEBUG_FLAGS = "-g"
-                    GREETING = "Greeting"
-                }
-                steps{
-                    // Remember to use double quotes
-                    // Default params in Jenkins
-                    echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
-                    echo "JAVA_HOME: ${env.JAVA_HOME}"
-                    echo "Jenkins TARGET_URL: ${JENKINS_URL}"
-                    echo "Jenkins Node Name: ${NODE_NAME}"
-                    echo "Jenkins Workspace: ${WORKSPACE}"
+        stage('env') {
+            agent {
+                label "mac"
+            }
+            // Env params within stage directive can only be used in the steps within the stage.
+            environment{
+                DEBUG_FLAGS = "-g"
+                GREETING = "Greeting"
+            }
+            steps{
+                // Remember to use double quotes
+                // Default params in Jenkins
+                echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+                echo "JAVA_HOME: ${env.JAVA_HOME}"
+                echo "Jenkins TARGET_URL: ${JENKINS_URL}"
+                echo "Jenkins Node Name: ${NODE_NAME}"
+                echo "Jenkins Workspace: ${WORKSPACE}"
 
-                    // Customized params in Jenkinsfile
-                    echo "CC: ${CC}"
-                    echo "DEBUG_FLAGS: ${DEBUG_FLAGS}"
-                    echo "GREETING: ${GREETING}"
-                    echo "EXIT_STATUS: ${EXIT_STATUS}"
-                    sh 'printenv'
-                    echo "${params.CHOICE}"
+                // Customized params in Jenkinsfile
+                echo "CC: ${CC}"
+                echo "DEBUG_FLAGS: ${DEBUG_FLAGS}"
+                echo "GREETING: ${GREETING}"
+                echo "EXIT_STATUS: ${EXIT_STATUS}"
+                sh 'printenv'
+                echo "${params.CHOICE}"
 
-                    // For convenience, when calling steps taking only one parameter (or only one mandatory parameter), the parameter name may be omitted.
-                    sh 'echo hello' /* short form  */
-                    sh([script: 'echo hello'])  /* long form */
-                }
-                post {
-                    always {
-                        echo "Testing post after stage env ..."
-                    }
+                // For convenience, when calling steps taking only one parameter (or only one mandatory parameter), the parameter name may be omitted.
+                sh 'echo hello' /* short form  */
+                sh([script: 'echo hello'])  /* long form */
+            }
+            post {
+                always {
+                    echo "Testing post after stage env ..."
                 }
             }
         }
