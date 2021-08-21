@@ -44,7 +44,9 @@ pipeline{
     }
     stages {
         stage('env') {
-            agent any
+            agent {
+                label "mac"
+            }
             // Env params within stage directive can only be used in the steps within the stage.
             environment{
                 DEBUG_FLAGS = "-g"
@@ -65,6 +67,7 @@ pipeline{
                 echo "GREETING: ${GREETING}"
                 echo "EXIT_STATUS: ${EXIT_STATUS}"
                 sh 'printenv'
+                echo "${params.CHOICE}"
             }
             post {
                 always {
